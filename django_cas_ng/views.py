@@ -215,6 +215,11 @@ class LogoutView(View):
             client = get_cas_client(request=request)
             return HttpResponseRedirect(client.get_logout_url(redirect_url))
 
+        # If a redirect-after-logout url was specified, we should use it to avoid
+        # falling in the failure case below
+        if settings.CAS_REDIRECT_AFTER_LOGOUT:
+            return HttpResponseRedirect(settings.CAS_REDIRECT_AFTER_LOGOUT)
+
         # This is in most cases pointless if not CAS_RENEW is set. The user will
         # simply be logged in again on next request requiring authorization.
         return HttpResponseRedirect(next_page)
